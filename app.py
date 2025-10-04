@@ -65,7 +65,7 @@ def get_disease_info(label, target_lang="te"):
     return translated_info
 
 # --- Load your trained model ---
-MODEL_PATH = r"C:\Users\Anusha\crop\public\model_final.h5"  # replace with your model path
+MODEL_PATH = r"C:\Users\Anusha\crop_disease_webapp\public\model_final.h5"  # replace with your model path
 model = tf.keras.models.load_model(MODEL_PATH)
 print("Model expects input shape:", model.input_shape)
 
