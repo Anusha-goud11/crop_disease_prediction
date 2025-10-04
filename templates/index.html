@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Home | Crop Disease App</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="upload-container">
+    <h2>Upload Crop Image</h2>
+    <form action="{{ url_for('predict') }}" method="POST" enctype="multipart/form-data">
+      <label for="language">Select Language:</label>
+      <select name="language" id="language" required>
+        <option value="en">English</option>
+        <option value="hi">Hindi</option>
+        <option value="te">Telugu</option>
+        <option value="ta">Tamil</option>
+        <option value="kn">Kannada</option>
+        <!-- Add more languages as needed -->
+      </select>
+
+      <input type="file" name="file" required>
+      <button type="submit">Predict</button>
+    </form>
+  </div>
+</body>
+</html>

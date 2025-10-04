@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Result | Crop Disease App</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="result-container">
+    <h2>Prediction Result</h2>
+    <img src="{{ image_path }}" alt="Uploaded Image" width="300"><br>
+    <p><b>Label:</b> {{ label }}</p>
+    <p><b>Confidence:</b> {{ confidence }} %</p>
+    <h3>Disease Description (Translated):</h3>
+    <p>{{ description }}</p>
+    <h3>Suggested Remedy (Translated):</h3>
+    <p>{{ remedy }}</p>
+    <a href="{{ url_for('home') }}">🔙 Try Again</a>
+  </div>
+</body>
+</html>
