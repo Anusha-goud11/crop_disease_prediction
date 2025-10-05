@@ -98,47 +98,55 @@ def home():
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    if "file" not in request.files:
-        return redirect(request.url)
+    try:
+        if "file" not in request.files:
+            print("No file part in request")
+            return redirect(request.url)
 
-    file = request.files["file"]
-    if file.filename == "":
-        return redirect(request.url)
+        file = request.files["file"]
+        if file.filename == "":
+            print("No selected file")
+            return redirect(request.url)
 
-    if file:
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-        file.save(filepath)
-        filepath = filepath.replace("\\", "/")  # Normalize path for Render
+        if file:
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+            file.save(filepath)
+            filepath = filepath.replace("\\", "/")  # Normalize path for Render
 
-        # Get selected language from form
-        language = request.form.get("language", "en")
+            # Get selected language from form
+            language = request.form.get("language", "en")
 
-        # Step 1: Predict disease
-        label, confidence = predict_image(filepath)
+            # Step 1: Predict disease
+            label, confidence = predict_image(filepath)
 
-        # Step 2: Get disease info
-        info = get_disease_info(label, target_lang=language)
-        description = info["description"]
-        remedy = info["remedy"]
+            # Step 2: Get disease info
+            info = get_disease_info(label, target_lang=language)
+            description = info["description"]
+            remedy = info["remedy"]
 
-        # Step 3: Translate to selected language
-        description_translated = translate_text(description, language)
-        remedy_translated = translate_text(remedy, language)
-        print("File saved at:", filepath)
-        print("Language selected:", language)
-        print("Predicted label:", label)
-        print("Confidence:", confidence)
+            # Step 3: Translate to selected language
+            description_translated = translate_text(description, language)
+            remedy_translated = translate_text(remedy, language)
 
-        # Step 4: Render result page
-        image_path = url_for('static', filename='uploads/' + filename)
+            print("File saved at:", filepath)
+            print("Language selected:", language)
+            print("Predicted label:", label)
+            print("Confidence:", confidence)
 
-        return render_template("result.html",
-                       image_path=image_path,
-                       label=label,
-                       confidence=confidence,
-                       description=description_translated,
-                       remedy=remedy_translated)
+            # Step 4: Render result page
+            image_path = url_for('static', filename='uploads/' + filename)
+
+            return render_template("result.html",
+                                   image_path=image_path,
+                                   label=label,
+                                   confidence=confidence,
+                                   description=description_translated,
+                                   remedy=remedy_translated)
+
+    except Exception as e:
+        print("Prediction error:", str(e))
+        return "Internal Server Error", 500
 
         
         
