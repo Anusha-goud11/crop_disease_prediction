@@ -1,5 +1,11 @@
+# At the top of app.py
+model = keras.models.load_model("public/model_final.h5")
 from flask import Flask, render_template, request, redirect
 import os
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["TF_NUM_INTRAOP_THREADS"] = "1"
+os.environ["TF_NUM_INTEROP_THREADS"] = "1"
+
 from werkzeug.utils import secure_filename
 import tensorflow as tf
 import numpy as np
@@ -75,18 +81,35 @@ print("Model expects input shape:", model.input_shape)
 CLASS_NAMES = ["Healthy Rice Leaf", "Brown Spot", "Bacterial Leaf Blight", "Leaf Blast", "Leaf scald", "Sheath Blight"]  # replace with your actual classes
 
 # --- Image preprocessing & prediction ---
-def predict_image(image_path):
-    img = Image.open(image_path).convert('RGB')  # convert to RGB
-    img = img.resize((128, 128))                # MUST match training size
-    img_array = np.array(img) / 255.0           # normalize
-    img_array = np.expand_dims(img_array, axis=0)  # add batch dim
-    print("DEBUG: img_array.shape =", img_array.shape)  # should be (1, 224, 224, 3)
-    
-    prediction = model.predict(img_array)
-    class_index = np.argmax(prediction)
-    confidence = np.max(prediction) * 100
-    return CLASS_NAMES[class_index], confidence
+def predict_image(filepath):
+    try:
+        print("Loading image:", filepath)
 
+        # Step 1: Load and preprocess the image
+        img = Image.open(filepath).convert('RGB')
+        img = img.resize((128, 128))
+        img_array = np.array(img) / 255.0
+        img_array = np.expand_dims(img_array, axis=0)
+
+        print("DEBUG: img_array.shape =", img_array.shape)  # Should be (1, 128, 128, 3)
+
+        # Step 2: Run prediction
+        print("Running prediction...")
+        prediction = model.predict(img_array)
+        print("Prediction complete")
+
+        # Step 3: Extract results
+        class_index = np.argmax(prediction)
+        confidence = np.max(prediction) * 100
+
+        print("Predicted class:", CLASS_NAMES[class_index])
+        print("Confidence:", confidence)
+
+        return CLASS_NAMES[class_index], confidence
+
+    except Exception as e:
+        print("ERROR in predict_image:", str(e))
+        raise
 # --- Routes ---
 @app.route("/")
 def login():
