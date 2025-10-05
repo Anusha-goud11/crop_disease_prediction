@@ -1,4 +1,5 @@
 # At the top of app.py
+from tensorflow import keras
 model = keras.models.load_model("public/model_final.h5")
 from flask import Flask, render_template, request, redirect
 import os
