@@ -42,7 +42,7 @@ def get_disease_info(label, target_lang="te"):
         "description": "Brown spot appears as small brown lesions on leaves, often due to nutrient deficiency or fungal infection.",
         "remedy": "Apply potassium-rich fertilizer and use fungicide if needed."
     },
-    "Bacterial LeafBlight": {
+    "Bacterial Leaf Blight": {
         "description": "Bacterial leaf blight causes water-soaked lesions that turn yellow and spread rapidly.",
         "remedy": "Use copper-based bactericides and avoid overhead irrigation."
     },
