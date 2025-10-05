@@ -5,6 +5,8 @@ import tensorflow as tf
 import numpy as np
 from PIL import Image
 from deep_translator import GoogleTranslator
+from flask import url_for
+
 
 # --- Flask app setup ---
 app = Flask(__name__)
@@ -107,6 +109,7 @@ def predict():
         filename = secure_filename(file.filename)
         filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
         file.save(filepath)
+        filepath = filepath.replace("\\", "/")  # Normalize path for Render
 
         # Get selected language from form
         language = request.form.get("language", "en")
@@ -122,14 +125,23 @@ def predict():
         # Step 3: Translate to selected language
         description_translated = translate_text(description, language)
         remedy_translated = translate_text(remedy, language)
+        print("File saved at:", filepath)
+        print("Language selected:", language)
+        print("Predicted label:", label)
+        print("Confidence:", confidence)
 
         # Step 4: Render result page
+        image_path = url_for('static', filename='uploads/' + filename)
+
         return render_template("result.html",
-                               image_path=filepath,
-                               label=label,
-                               confidence=confidence,
-                               description=description_translated,
-                               remedy=remedy_translated)
+                       image_path=image_path,
+                       label=label,
+                       confidence=confidence,
+                       description=description_translated,
+                       remedy=remedy_translated)
+
+        
+        
 # --- Run app ---
 if __name__ == "__main__":
     app.run(debug=True)
